@@ -4,7 +4,6 @@ import { Shift } from '../../src/modules/shift/shift.entity';
 import { v4 as UUIDv4 } from 'uuid';
 import { addHours } from 'date-fns';
 
-//todo: make it array to return more data
 export const jobStub = (): {
   jobInstance: Job;
   job: {

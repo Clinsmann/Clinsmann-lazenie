@@ -12,8 +12,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   const config = new DocumentBuilder()
-    .setTitle('Zennie Microservice')
-    .setDescription('The zennie API description')
+    .setTitle('Lazenie Microservice')
+    .setDescription('The Lazenie API description')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);

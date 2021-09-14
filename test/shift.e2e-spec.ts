@@ -49,7 +49,6 @@ describe('Job Module - Integration test', () => {
   });
 
   describe('Shift Controller - FETCH', () => {
-    //todo: test for when there is no record and test for pagination with different conditions
     it('fetch all shifts : 200', async () => {
       const { jobInstance } = jobStub();
       await dbConnection.getRepository<Job>(JOB_REPOSITORY).save(jobInstance);

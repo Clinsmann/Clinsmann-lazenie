@@ -16,7 +16,6 @@ import { DatabaseService } from './database.service';
             : './database.sqlite',
         entities: [join(__dirname, '../../**/**.entity{.ts,.js}')],
         synchronize: true,
-        // synchronize: false,
       }),
       inject: [ConfigService],
     }),

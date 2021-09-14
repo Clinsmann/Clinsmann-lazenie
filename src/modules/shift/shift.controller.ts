@@ -13,11 +13,13 @@ import {
 import { Shift } from './shift.entity';
 import { ShiftService } from './shift.service';
 import { BookTalentRequest } from './dto/BookTalentRequest';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('shifts')
 export class ShiftController {
   constructor(private readonly shiftService: ShiftService) {}
 
+  @ApiTags('Job')
   @Get(':jobId')
   async getShifts(
     @Param('jobId', new ParseUUIDPipe()) jobId: string,

@@ -18,7 +18,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-    // todo: handle specific database errors
     response.status(status).json({
       errorId: UUIDv4(),
       message: exception.message,

@@ -17,12 +17,13 @@ import { JobRequest } from './dto/JobRequest';
 import { ResponseDto } from '../../utils/ResponseDto';
 import { ValidationPipe } from '../../ValidationPipe';
 import { JobRequestResponse } from './dto/JobRequestResponse';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('jobs')
 export class JobController {
   constructor(private readonly jobService: JobService) {}
 
+  @ApiTags('Job')
   @Post()
   @ApiOperation({ description: 'Request a job to be created.' })
   async requestJob(
@@ -33,11 +34,13 @@ export class JobController {
     return new ResponseDto<JobRequestResponse>(new JobRequestResponse(job.id));
   }
 
+  @ApiTags('Job')
   @Get()
   async getJobs(@Query() query): Promise<{ total: number; jobs: Job[] }> {
     return this.jobService.getJobs(query.pageSize, query.pageNumber);
   }
 
+  @ApiTags('Job')
   @Get(':jobId')
   async getJob(
     @Param('jobId', new ParseUUIDPipe()) jobId: string,
@@ -45,6 +48,7 @@ export class JobController {
     return this.jobService.getJobById(jobId);
   }
 
+  @ApiTags('Job')
   @Patch(':jobId/cancel')
   @HttpCode(HttpStatus.NO_CONTENT)
   async cancelJob(
