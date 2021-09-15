@@ -57,8 +57,6 @@ describe('Job Module - Integration test', () => {
       expect(response.body.total).toBe(1);
       expect(response.body.jobs[0].id).toBe(jobInstance.id);
       expect(response.body.jobs[0].companyId).toBe(jobInstance.companyId);
-      expect(response.body.jobs[0].shifts.length).toBeGreaterThan(0);
-      expect(response.body.jobs[0].shifts[0].jobId).toBe(jobInstance.id);
       expect(response.body.jobs[0].jobStatus).toBe(Status.BOOKED);
     });
 

@@ -122,6 +122,25 @@ describe('Job Module - Integration test', () => {
       expect(bookedShift.shiftStatus).toBe(Status.BOOKED);
       expect(bookedShift.talentId).toBe(talent);
     });
+
+    it('Book a shift with the correct shift ID and correct talent ID but the shift has been booked already: 400', async () => {
+      const { jobInstance } = jobStub();
+      const talent = UUIDv4();
+      const job = await dbConnection
+        .getRepository<Job>(JOB_REPOSITORY)
+        .save(jobInstance);
+
+      await request(httpServer)
+        .patch(`${SHIFTS_URL_PATH}/${job.shifts[0].id}/book`)
+        .send({ talent });
+
+      const response = await request(httpServer)
+        .patch(`${SHIFTS_URL_PATH}/${job.shifts[0].id}/book`)
+        .send({ talent });
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body.message).toBe('Shift has already been booked.');
+    });
   });
 
   describe('Shift Controller: Cancel', () => {
@@ -159,6 +178,20 @@ describe('Job Module - Integration test', () => {
       expect(cancelRes.status).toBe(HttpStatus.NO_CONTENT);
       expect(bookedShift2.shiftStatus).toBe(Status.CANCEL);
       expect(bookedShift2.talentId).toBe(talent);
+    });
+
+    it('Cancel shift by shift ID that has not been booked : 400', async () => {
+      const { jobInstance } = jobStub();
+      const job = await dbConnection
+        .getRepository<Job>(JOB_REPOSITORY)
+        .save(jobInstance);
+
+      const response = await request(httpServer).patch(
+        `${SHIFTS_URL_PATH}/${job.shifts[0].id}/cancel`,
+      );
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body.message).toBe('Shift has not been booked.');
     });
   });
 

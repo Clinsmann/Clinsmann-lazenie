@@ -6,7 +6,7 @@ import { addHours, eachDayOfInterval, isAfter, isPast } from 'date-fns';
 
 import { Job } from './job.entity';
 import { Shift } from '../shift/shift.entity';
-import { JobRequest } from './dto/JobRequest';
+import { JobRequest } from './dto/JobRequest.dto';
 import { Status } from '../../utils/constants';
 import { isShiftWithinLimit } from '../../utils/utils';
 
@@ -83,19 +83,19 @@ export class JobService {
   }
 
   public async getJobs(
-    pageSize?: number,
-    pageNumber?: number,
+    pageSize?: number | string,
+    pageNumber?: number | string,
   ): Promise<{ total: number; jobs: Job[] }> {
+    pageSize = Number(pageSize);
+    pageNumber = Number(pageNumber);
     const take = pageSize || Number(process.env.PAGE_SIZE);
     const skip = (pageNumber > 0 ? pageNumber - 1 : 0) * take;
-
     const [result, total] = await this.jobRepository.findAndCount({
+      select: ['id', 'companyId', 'startTime', 'endTime', 'jobStatus'],
       order: { createdAt: 'ASC' },
-      relations: ['shifts'],
       skip,
       take,
     });
-
     return { total, jobs: result };
   }
 

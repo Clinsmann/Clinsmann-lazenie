@@ -39,7 +39,7 @@ export class ShiftService {
       .getRawMany();
   }
 
-  public async getShifts(jobId: string): Promise<Shift[]> {
+  public async getShiftsByJobId(jobId: string): Promise<Shift[]> {
     return this.repository
       .createQueryBuilder('shift')
       .where({ jobId })
@@ -50,7 +50,14 @@ export class ShiftService {
   public async bookTalent(talent: string, shiftId: string): Promise<Shift> {
     const shift = await this.repository.findOne(shiftId);
     if (!shift) {
-      throw new HttpException('Record not found.', HttpStatus.NOT_FOUND);
+      throw new HttpException('Shift not found.', HttpStatus.NOT_FOUND);
+    }
+
+    if (shift.shiftStatus == Status.BOOKED) {
+      throw new HttpException(
+        'Shift has already been booked.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     const talentShifts = await this.repository.find({
@@ -96,11 +103,15 @@ export class ShiftService {
     const shift = await this.repository.findOne(shiftId, {
       relations: ['job'],
     });
+
     if (!shift.shiftStatus || shift.shiftStatus === Status.BOOKED) {
       shift.shiftStatus = Status.CANCEL;
       return this.repository.save(shift);
     } else {
-      throw new Error('Shift has not been booked.');
+      throw new HttpException(
+        'Shift has not been booked.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
@@ -121,18 +132,18 @@ export class ShiftService {
   }
 
   public async cancelShiftsByTalent(talentId: string): Promise<Shift[]> {
-    const shiftsByTalent = await this.repository.find({
+    const shift = await this.repository.find({
       where: {
         talentId: talentId,
         shiftStatus: Status.BOOKED,
       },
       relations: ['job'],
     });
-    shiftsByTalent.map((shift) => {
+    shift.map((shift) => {
       shift.shiftStatus = Status.CANCEL;
       return shift;
     });
-    await this.repository.save(shiftsByTalent);
-    return this.createReplacementShifts(shiftsByTalent);
+    await this.repository.save(shift);
+    return this.createReplacementShifts(shift);
   }
 }
